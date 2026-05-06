@@ -59,10 +59,10 @@
                                     <td class="px-6 py-4 text-slate-500 font-mono text-sm"><?= $s['nisn'] ?></td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-center space-x-3">
-                                            <a href="<?= base_url('guru/nilai/input/' . $s['id']) ?>" class="text-emerald-600 hover:text-emerald-700" title="Input Nilai">
+                                            <a href="<?= base_url('guru/nilai/input/' . $s['class_id']) ?>" class="text-emerald-600 hover:text-emerald-700" title="Input Nilai">
                                                 <i data-lucide="edit-3" class="w-4 h-4"></i>
                                             </a>
-                                            <a href="<?= base_url('guru/absensi/input/' . $s['id']) ?>" class="text-blue-600 hover:text-blue-700" title="Input Absensi">
+                                            <a href="<?= base_url('guru/absensi/input/' . $s['class_id']) ?>" class="text-blue-600 hover:text-blue-700" title="Input Absensi">
                                                 <i data-lucide="check-square" class="w-4 h-4"></i>
                                             </a>
                                         </div>

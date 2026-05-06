@@ -26,9 +26,12 @@ class Dashboard extends BaseController
             $totalSantri = $santriModel->whereIn('class_id', $classIds)->countAllResults();
             
             $today = date('Y-m-d');
-            $attendanceToday = $attendanceModel->whereIn('santri_id', function($db) use ($classIds) {
-                return $db->table('santri')->select('id')->whereIn('class_id', $classIds);
-            })->where('date', $today)->where('status', 'Hadir')->countAllResults();
+            $santriIds = $santriModel->whereIn('class_id', $classIds)->findColumn('id') ?? [];
+            $attendanceToday = 0;
+            if (!empty($santriIds)) {
+                $attendanceToday = $attendanceModel->whereIn('santri_id', $santriIds)
+                    ->where('date', $today)->where('status', 'Hadir')->countAllResults();
+            }
 
             $attendancePercentage = $totalSantri > 0 ? round(($attendanceToday / $totalSantri) * 100, 1) : 0;
         }

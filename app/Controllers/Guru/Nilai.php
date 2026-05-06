@@ -100,11 +100,21 @@ class Nilai extends BaseController
                 'category' => $category
             ])->first();
 
+            $scoreNumeric = $values['score_numeric'];
+            
+            // If the input is empty, delete the existing record or skip inserting
+            if ($scoreNumeric === '' || $scoreNumeric === null) {
+                if ($existing) {
+                    $this->gradeModel->delete($existing['id']);
+                }
+                continue;
+            }
+
             $data = [
                 'santri_id' => $santriId,
                 'academic_year_id' => $academicYearId,
                 'category' => $category,
-                'score_numeric' => $values['score_numeric'] ?? 0,
+                'score_numeric' => (int) $scoreNumeric,
                 'score_letter' => $values['score_letter'] ?? '-',
                 'notes' => $values['notes'] ?? ''
             ];

@@ -30,7 +30,7 @@
     </div>
 <?php endif; ?>
 
-<form action="<?= base_url('guru/nilai/store') ?>" method="post">
+<form action="<?= base_url('guru/nilai/store') ?>" method="post" autocomplete="off">
     <?= csrf_field() ?>
     <input type="hidden" name="class_id" value="<?= $class['id'] ?>">
     <input type="hidden" name="category" value="<?= $category ?>">
@@ -43,7 +43,7 @@
                     <tr class="bg-slate-50 text-slate-400 text-xs uppercase tracking-wider font-bold">
                         <th class="px-6 py-4 text-center w-16">No</th>
                         <th class="px-6 py-4 w-1/4">Nama Santri</th>
-                        <th class="px-6 py-4 w-20 text-center">Angka</th>
+                        <th class="px-6 py-4 w-32 text-center">Angka</th>
                         <th class="px-6 py-4 w-20 text-center">Huruf</th>
                         <th class="px-6 py-4">Catatan / Deskripsi</th>
                     </tr>
@@ -55,7 +55,7 @@
                         </tr>
                     <?php else : ?>
                         <?php foreach ($santris as $index => $s) : 
-                            $scoreNumeric = $gradeMap[$s['id']]['score_numeric'] ?? '';
+                            $scoreNumeric = isset($gradeMap[$s['id']]) ? (int)$gradeMap[$s['id']]['score_numeric'] : '';
                             $scoreLetter = $gradeMap[$s['id']]['score_letter'] ?? '';
                             $note = $gradeMap[$s['id']]['notes'] ?? '';
                         ?>
@@ -65,23 +65,29 @@
                                     <span class="font-medium text-slate-700"><?= $s['name'] ?></span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <input type="number" name="grades[<?= $s['id'] ?>][score_numeric]" value="<?= $scoreNumeric ?>" min="0" max="100" placeholder="0"
-                                           class="w-full bg-slate-50 border-none rounded-lg px-3 py-2 text-sm text-slate-600 outline-none focus:ring-2 focus:ring-blue-100 transition-all text-center font-bold">
+                                    <input type="text" 
+                                           inputmode="numeric"
+                                           pattern="[0-9]*"
+                                           autocomplete="off"
+                                           name="grades[<?= $s['id'] ?>][score_numeric]" 
+                                           value="<?= $scoreNumeric ?>" 
+                                           data-saved-value="<?= $scoreNumeric ?>"
+                                           placeholder="0"
+                                           data-santri-id="<?= $s['id'] ?>"
+                                           onclick="this.select()"
+                                           oninput="validateAndFill(this)"
+                                           style="min-width: 80px;"
+                                           class="score-input bg-white border border-slate-200 rounded-lg px-4 py-3 text-lg text-slate-800 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all text-center font-bold">
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <select name="grades[<?= $s['id'] ?>][score_letter]" 
-                                            class="bg-slate-50 border-none rounded-lg px-2 py-2 text-sm text-slate-600 outline-none focus:ring-2 focus:ring-blue-100 transition-all font-bold">
-                                        <option value="-" <?= $scoreLetter == '-' ? 'selected' : '' ?>>-</option>
-                                        <option value="A" <?= $scoreLetter == 'A' ? 'selected' : '' ?>>A</option>
-                                        <option value="B" <?= $scoreLetter == 'B' ? 'selected' : '' ?>>B</option>
-                                        <option value="C" <?= $scoreLetter == 'C' ? 'selected' : '' ?>>C</option>
-                                        <option value="D" <?= $scoreLetter == 'D' ? 'selected' : '' ?>>D</option>
-                                        <option value="E" <?= $scoreLetter == 'E' ? 'selected' : '' ?>>E</option>
-                                    </select>
+                                    <span id="letter-<?= $s['id'] ?>" class="inline-block min-w-[36px] px-3 py-2 rounded-lg text-sm font-bold <?= getLeterBadgeClass($scoreLetter) ?>">
+                                        <?= $scoreLetter ?: '-' ?>
+                                    </span>
+                                    <input type="hidden" name="grades[<?= $s['id'] ?>][score_letter]" id="letter-input-<?= $s['id'] ?>" value="<?= $scoreLetter ?: '-' ?>">
                                 </td>
                                 <td class="px-6 py-4">
                                     <textarea name="grades[<?= $s['id'] ?>][notes]" rows="1" placeholder="Catatan perkembangan..." 
-                                              class="w-full bg-slate-50 border-none rounded-lg px-3 py-2 text-xs text-slate-600 outline-none focus:ring-2 focus:ring-blue-100 transition-all resize-none"><?= $note ?></textarea>
+                                              class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-xs text-slate-600 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all resize-none"><?= $note ?></textarea>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -90,7 +96,11 @@
             </table>
         </div>
         
-        <div class="p-6 bg-slate-50/50 border-t border-slate-50 flex justify-end">
+        <div class="p-6 bg-slate-50/50 border-t border-slate-50 flex items-center justify-between">
+            <p class="text-xs text-slate-400">
+                <i data-lucide="info" class="w-3 h-3 inline"></i>
+                Ketik angka 0-100, nilai huruf otomatis terisi (A ≥ 90, B ≥ 80, C ≥ 70, D ≥ 60, E &lt; 60)
+            </p>
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-8 rounded-xl transition-all shadow-lg shadow-blue-100 flex items-center space-x-2">
                 <i data-lucide="save" class="w-4 h-4"></i>
                 <span>Simpan Nilai</span>
@@ -98,4 +108,68 @@
         </div>
     </div>
 </form>
+
+<script>
+function validateAndFill(input) {
+    // Only allow digits
+    input.value = input.value.replace(/[^0-9]/g, '');
+    
+    // Limit to 100
+    var val = parseInt(input.value);
+    if (!isNaN(val) && val > 100) {
+        input.value = '100';
+        val = 100;
+    }
+
+    var santriId = input.getAttribute('data-santri-id');
+    var letterSpan = document.getElementById('letter-' + santriId);
+    var letterInput = document.getElementById('letter-input-' + santriId);
+    var letter = '-';
+    var badgeClass = 'bg-slate-100 text-slate-400';
+
+    if (!isNaN(val) && input.value !== '') {
+        if (val >= 90) { letter = 'A'; badgeClass = 'bg-emerald-100 text-emerald-700'; }
+        else if (val >= 80) { letter = 'B'; badgeClass = 'bg-blue-100 text-blue-700'; }
+        else if (val >= 70) { letter = 'C'; badgeClass = 'bg-amber-100 text-amber-700'; }
+        else if (val >= 60) { letter = 'D'; badgeClass = 'bg-orange-100 text-orange-700'; }
+        else { letter = 'E'; badgeClass = 'bg-red-100 text-red-700'; }
+    }
+
+    letterSpan.textContent = letter;
+    letterSpan.className = 'inline-block min-w-[36px] px-3 py-2 rounded-lg text-sm font-bold ' + badgeClass;
+    letterInput.value = letter;
+}
+
+// Force restore saved values (defeats browser autocomplete)
+function restoreAllValues() {
+    document.querySelectorAll('.score-input').forEach(function(input) {
+        var savedValue = input.getAttribute('data-saved-value');
+        input.value = savedValue;
+        if (savedValue !== '') {
+            validateAndFill(input);
+        }
+    });
+}
+
+// Run multiple times to ensure browser autocomplete is overridden
+document.addEventListener('DOMContentLoaded', function() {
+    restoreAllValues();
+    setTimeout(restoreAllValues, 50);
+    setTimeout(restoreAllValues, 200);
+    setTimeout(restoreAllValues, 500);
+});
+</script>
+
+<?php
+function getLeterBadgeClass($letter) {
+    switch($letter) {
+        case 'A': return 'bg-emerald-100 text-emerald-700';
+        case 'B': return 'bg-blue-100 text-blue-700';
+        case 'C': return 'bg-amber-100 text-amber-700';
+        case 'D': return 'bg-orange-100 text-orange-700';
+        case 'E': return 'bg-red-100 text-red-700';
+        default:  return 'bg-slate-100 text-slate-400';
+    }
+}
+?>
 <?= $this->endSection() ?>
