@@ -8,10 +8,12 @@ use CodeIgniter\HTTP\ResponseInterface;
 class Guru extends BaseController
 {
     protected $userModel;
+    protected $activityLog;
 
     public function __construct()
     {
         $this->userModel = new \App\Models\UserModel();
+        $this->activityLog = new \App\Models\ActivityLogModel();
     }
 
     public function index()
@@ -48,6 +50,8 @@ class Guru extends BaseController
             'role'     => 'guru'
         ]);
 
+        $this->activityLog->log('Tambah Guru', "Menambahkan pengajar baru: " . $this->request->getPost('name'));
+
         return redirect()->to('/kepala/guru')->with('success', 'Data guru berhasil ditambahkan.');
     }
 
@@ -83,6 +87,8 @@ class Guru extends BaseController
 
         $this->userModel->save($data);
 
+        $this->activityLog->log('Update Guru', "Memperbarui data pengajar: " . $this->request->getPost('name'));
+
         return redirect()->to('/kepala/guru')->with('success', 'Data guru berhasil diupdate.');
     }
 
@@ -113,7 +119,9 @@ class Guru extends BaseController
 
     public function delete($id)
     {
+        $guru = $this->userModel->find($id);
         $this->userModel->delete($id);
+        $this->activityLog->log('Hapus Guru', "Menghapus data pengajar: " . ($guru['name'] ?? 'ID ' . $id));
         return redirect()->to('/kepala/guru')->with('success', 'Data guru berhasil dihapus.');
     }
 }

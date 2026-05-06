@@ -16,9 +16,16 @@ class Dashboard extends BaseController
 
         $today = date('Y-m-d');
         $totalSantri = $santriModel->countAllResults();
-        $attendanceToday = $attendanceModel->where('date', $today)->where('status', 'Hadir')->countAllResults();
         
-        $attendancePercentage = $totalSantri > 0 ? round(($attendanceToday / $totalSantri) * 100, 1) : 0;
+        // Count unique students who are present today
+        $attendanceToday = $attendanceModel->where('date', $today)
+                                          ->where('status', 'Hadir')
+                                          ->select('santri_id')
+                                          ->distinct()
+                                          ->countAllResults();
+        
+        $attendancePercentage = $totalSantri > 0 ? ($attendanceToday / $totalSantri) * 100 : 0;
+        $attendancePercentage = min(100, round($attendancePercentage, 1));
 
         $data = [
             'title' => 'Dashboard Kepala Yayasan',
@@ -28,7 +35,12 @@ class Dashboard extends BaseController
                 'total_class'  => $classModel->countAllResults(),
                 'avg_attendance' => $attendancePercentage,
             ],
-            'announcements' => (new \App\Models\AnnouncementModel())->orderBy('created_at', 'DESC')->limit(5)->findAll()
+            'announcements' => (new \App\Models\AnnouncementModel())
+                                ->whereIn('target_role', ['all', 'kepala'])
+                                ->orderBy('created_at', 'DESC')
+                                ->limit(5)
+                                ->findAll(),
+            'recent_activities' => (new \App\Models\ActivityLogModel())->getRecent(8)
         ];
         return view('kepala/dashboard', $data);
     }

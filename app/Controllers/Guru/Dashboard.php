@@ -48,7 +48,11 @@ class Dashboard extends BaseController
                 'avg_attendance' => $attendancePercentage,
             ],
             'santri' => $santriList,
-            'announcements' => (new \App\Models\AnnouncementModel())->orderBy('created_at', 'DESC')->limit(5)->findAll()
+            'announcements' => (new \App\Models\AnnouncementModel())
+                                ->whereIn('target_role', ['all', 'guru'])
+                                ->orderBy('created_at', 'DESC')
+                                ->limit(5)
+                                ->findAll()
         ];
         return view('guru/dashboard', $data);
     }

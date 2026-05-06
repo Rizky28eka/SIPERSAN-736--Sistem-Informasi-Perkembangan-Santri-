@@ -47,11 +47,19 @@
                         <i data-lucide="contact-2" class="w-5 h-5"></i>
                         <span>Data Wali</span>
                     </a>
+                    <a href="<?= base_url('kepala/master-spp') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= url_is('kepala/master-spp') ? 'bg-blue-50 text-blue-600 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
+                        <i data-lucide="settings-2" class="w-5 h-5"></i>
+                        <span>Master SPP</span>
+                    </a>
                     
                     <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Laporan</div>
                     <a href="<?= base_url('kepala/nilai') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all">
                         <i data-lucide="file-text" class="w-5 h-5"></i>
                         <span>Rekap Nilai</span>
+                    </a>
+                    <a href="<?= base_url('kepala/spp') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= url_is('kepala/spp') ? 'bg-blue-50 text-blue-600 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
+                        <i data-lucide="credit-card" class="w-5 h-5"></i>
+                        <span>Rekap SPP</span>
                     </a>
                 <?php endif; ?>
 
@@ -72,6 +80,10 @@
                     <a href="<?= base_url('wali/raport') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all">
                         <i data-lucide="book-open" class="w-5 h-5"></i>
                         <span>Lihat Raport</span>
+                    </a>
+                    <a href="<?= base_url('wali/spp') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= url_is('wali/spp') ? 'bg-blue-50 text-blue-600 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
+                        <i data-lucide="credit-card" class="w-5 h-5"></i>
+                        <span>Pembayaran SPP</span>
                     </a>
                 <?php endif; ?>
 

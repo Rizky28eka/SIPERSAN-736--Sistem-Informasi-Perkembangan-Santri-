@@ -10,7 +10,7 @@
 </div>
 
 <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 max-w-2xl mx-auto">
-    <form action="<?= base_url('kepala/wali') ?>" method="post" class="space-y-6">
+    <form action="<?= base_url('kepala/wali/store') ?>" method="post" class="space-y-6">
         <?= csrf_field() ?>
         
         <div>

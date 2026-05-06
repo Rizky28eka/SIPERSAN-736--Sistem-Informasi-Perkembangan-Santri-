@@ -10,12 +10,14 @@ class Santri extends BaseController
     protected $santriModel;
     protected $classModel;
     protected $userModel;
+    protected $activityLog;
 
     public function __construct()
     {
         $this->santriModel = new \App\Models\SantriModel();
         $this->classModel = new \App\Models\ClassModel();
         $this->userModel = new \App\Models\UserModel();
+        $this->activityLog = new \App\Models\ActivityLogModel();
     }
 
     public function index()
@@ -55,7 +57,7 @@ class Santri extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $this->santriModel->save([
+        $santriId = $this->santriModel->insert([
             'name'     => $this->request->getPost('name'),
             'nisn'     => $this->request->getPost('nisn'),
             'class_id' => $this->request->getPost('class_id'),
@@ -63,6 +65,12 @@ class Santri extends BaseController
             'gender'   => $this->request->getPost('gender'),
             'address'  => $this->request->getPost('address')
         ]);
+
+        // Automatically generate SPP bill for the current month
+        if ($santriId) {
+            $this->syncSpp($santriId);
+            $this->activityLog->log('Tambah Santri', "Menambahkan santri baru: " . $this->request->getPost('name'));
+        }
 
         return redirect()->to('/kepala/santri')->with('success', 'Data santri berhasil ditambahkan.');
     }
@@ -102,6 +110,11 @@ class Santri extends BaseController
             'gender'   => $this->request->getPost('gender'),
             'address'  => $this->request->getPost('address')
         ]);
+
+        // Sync SPP bill in case class changed
+        $this->syncSpp($id);
+
+        $this->activityLog->log('Update Santri', "Memperbarui data santri: " . $this->request->getPost('name'));
 
         return redirect()->to('/kepala/santri')->with('success', 'Data santri berhasil diupdate.');
     }
@@ -186,7 +199,47 @@ class Santri extends BaseController
 
     public function delete($id)
     {
+        $santri = $this->santriModel->find($id);
         $this->santriModel->delete($id);
+        $this->activityLog->log('Hapus Santri', "Menghapus data santri: " . ($santri['name'] ?? 'ID ' . $id));
         return redirect()->to('/kepala/santri')->with('success', 'Data santri berhasil dihapus.');
+    }
+
+    private function syncSpp($santriId)
+    {
+        $db = \Config\Database::connect();
+        $sppModel = new \App\Models\SppModel();
+        
+        $santri = $this->santriModel->find($santriId);
+        $class = $this->classModel->find($santri['class_id']);
+        
+        if (!$class) return;
+
+        $month = date('n');
+        $year = date('Y');
+        
+        $exists = $sppModel->where([
+            'santri_id' => $santriId,
+            'month' => $month,
+            'year' => $year
+        ])->first();
+
+        if ($exists) {
+            // Update existing bill if not lunas
+            if ($exists['status'] !== 'lunas') {
+                $sppModel->update($exists['id'], ['amount' => $class['spp_price']]);
+            }
+        } else {
+            // Create new bill
+            $sppModel->insert([
+                'santri_id' => $santriId,
+                'month' => $month,
+                'year' => $year,
+                'due_date' => date('Y-m-10'),
+                'amount' => $class['spp_price'],
+                'total_paid' => 0,
+                'status' => 'belum'
+            ]);
+        }
     }
 }

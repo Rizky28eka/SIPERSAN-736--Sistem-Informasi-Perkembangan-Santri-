@@ -9,11 +9,13 @@ class Kelas extends BaseController
 {
     protected $classModel;
     protected $userModel;
+    protected $activityLog;
 
     public function __construct()
     {
         $this->classModel = new \App\Models\ClassModel();
         $this->userModel = new \App\Models\UserModel();
+        $this->activityLog = new \App\Models\ActivityLogModel();
     }
 
     public function index()
@@ -82,6 +84,8 @@ class Kelas extends BaseController
             'teacher_id' => $this->request->getPost('teacher_id')
         ]);
 
+        $this->activityLog->log('Update Kelas', "Memperbarui data kelas: " . $this->request->getPost('name'));
+
         return redirect()->to('/kepala/kelas')->with('success', 'Data kelas berhasil diupdate.');
     }
 
@@ -109,7 +113,9 @@ class Kelas extends BaseController
 
     public function delete($id)
     {
+        $class = $this->classModel->find($id);
         $this->classModel->delete($id);
+        $this->activityLog->log('Hapus Kelas', "Menghapus data kelas: " . ($class['name'] ?? 'ID ' . $id));
         return redirect()->to('/kepala/kelas')->with('success', 'Data kelas berhasil dihapus.');
     }
 }

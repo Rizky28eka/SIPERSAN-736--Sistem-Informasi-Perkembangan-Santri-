@@ -36,7 +36,10 @@ class Dashboard extends BaseController
         }
 
         $announcementModel = new \App\Models\AnnouncementModel();
-        $announcements = $announcementModel->orderBy('created_at', 'DESC')->limit(3)->findAll();
+        $announcements = $announcementModel->whereIn('target_role', ['all', 'wali'])
+                                           ->orderBy('created_at', 'DESC')
+                                           ->limit(3)
+                                           ->findAll();
 
         $data = [
             'title'         => 'Dashboard Wali Santri',

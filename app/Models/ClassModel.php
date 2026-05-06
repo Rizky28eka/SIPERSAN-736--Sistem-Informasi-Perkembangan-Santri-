@@ -12,7 +12,7 @@ class ClassModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'teacher_id'];
+    protected $allowedFields    = ['name', 'teacher_id', 'spp_price'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

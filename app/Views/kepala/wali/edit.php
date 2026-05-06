@@ -10,9 +10,8 @@
 </div>
 
 <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 max-w-2xl mx-auto">
-    <form action="<?= base_url('kepala/wali/' . $wali['id']) ?>" method="post" class="space-y-6">
+    <form action="<?= base_url('kepala/wali/update/' . $wali['id']) ?>" method="post" class="space-y-6">
         <?= csrf_field() ?>
-        <input type="hidden" name="_method" value="PUT">
         
         <div>
             <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap</label>

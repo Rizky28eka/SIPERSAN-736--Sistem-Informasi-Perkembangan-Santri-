@@ -71,6 +71,9 @@ $routes->group('kepala', ['filter' => 'auth:kepala'], function ($routes) {
     $routes->post('announcements/delete/(:num)', 'Kepala\Announcements::delete/$1');
 
     $routes->get('nilai', 'Kepala\Nilai::index');
+    $routes->get('spp', 'Kepala\Spp::index');
+    $routes->get('master-spp', 'Kepala\MasterSpp::index');
+    $routes->post('master-spp/update', 'Kepala\MasterSpp::update');
 });
 
 // Guru Routes
@@ -94,4 +97,7 @@ $routes->group('wali', ['filter' => 'auth:wali'], function($routes) {
     $routes->get('dashboard', 'Wali\Dashboard::index');
     $routes->get('raport', 'Wali\Raport::index');
     $routes->get('raport/detail/(:num)', 'Wali\Raport::detail/$1');
+    $routes->get('spp', 'Wali\Spp::index');
+    $routes->get('spp/history', 'Wali\Spp::history');
+    $routes->post('spp/pay', 'Wali\Spp::pay');
 });

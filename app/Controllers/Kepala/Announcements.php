@@ -8,10 +8,12 @@ use App\Models\AnnouncementModel;
 class Announcements extends BaseController
 {
     protected $announcementModel;
+    protected $activityLog;
 
     public function __construct()
     {
         $this->announcementModel = new AnnouncementModel();
+        $this->activityLog = new \App\Models\ActivityLogModel();
     }
 
     public function index()
@@ -50,6 +52,8 @@ class Announcements extends BaseController
             'created_by'  => session()->get('user_id'),
         ]);
 
+        $this->activityLog->log('Tambah Pengumuman', "Menerbitkan pengumuman baru: " . $this->request->getPost('title'));
+
         return redirect()->to('/kepala/announcements')->with('success', 'Pengumuman berhasil diterbitkan.');
     }
 
@@ -81,12 +85,16 @@ class Announcements extends BaseController
             'target_role' => $this->request->getPost('target_role'),
         ]);
 
+        $this->activityLog->log('Update Pengumuman', "Memperbarui pengumuman: " . $this->request->getPost('title'));
+
         return redirect()->to('/kepala/announcements')->with('success', 'Pengumuman berhasil diperbarui.');
     }
 
     public function delete($id)
     {
+        $anc = $this->announcementModel->find($id);
         $this->announcementModel->delete($id);
+        $this->activityLog->log('Hapus Pengumuman', "Menghapus pengumuman: " . ($anc['title'] ?? 'ID ' . $id));
         return redirect()->to('/kepala/announcements')->with('success', 'Pengumuman berhasil dihapus.');
     }
 }

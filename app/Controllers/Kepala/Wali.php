@@ -8,10 +8,12 @@ use App\Models\UserModel;
 class Wali extends BaseController
 {
     protected $userModel;
+    protected $activityLog;
 
     public function __construct()
     {
         $this->userModel = new UserModel();
+        $this->activityLog = new \App\Models\ActivityLogModel();
     }
 
     public function index()
@@ -49,6 +51,8 @@ class Wali extends BaseController
             'name'     => $this->request->getPost('name'),
             'role'     => 'wali'
         ]);
+
+        $this->activityLog->log('Tambah Wali', "Menambahkan wali santri baru: " . $this->request->getPost('name'));
 
         return redirect()->to('/kepala/wali')->with('success', 'Data wali berhasil ditambahkan.');
     }
@@ -89,6 +93,8 @@ class Wali extends BaseController
 
         $this->userModel->save($data);
 
+        $this->activityLog->log('Update Wali', "Memperbarui data wali santri: " . $this->request->getPost('name'));
+
         return redirect()->to('/kepala/wali')->with('success', 'Data wali berhasil diupdate.');
     }
 
@@ -117,7 +123,9 @@ class Wali extends BaseController
 
     public function delete($id)
     {
+        $wali = $this->userModel->find($id);
         $this->userModel->delete($id);
+        $this->activityLog->log('Hapus Wali', "Menghapus data wali santri: " . ($wali['name'] ?? 'ID ' . $id));
         return redirect()->to('/kepala/wali')->with('success', 'Data wali berhasil dihapus.');
     }
 }
