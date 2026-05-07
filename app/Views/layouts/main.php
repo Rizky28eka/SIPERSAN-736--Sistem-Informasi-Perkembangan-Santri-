@@ -31,25 +31,25 @@
 
                 <?php if ($role === 'kepala') : ?>
                     <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Master Data</div>
-                    <a href="<?= base_url('kepala/santri') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all">
+                    <a href="<?= base_url('kepala/santri') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= url_is('kepala/santri*') ? 'bg-blue-50 text-blue-600 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
                         <i data-lucide="users" class="w-5 h-5"></i>
                         <span>Data Santri</span>
                     </a>
-                    <a href="<?= base_url('kepala/guru') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all">
+                    <a href="<?= base_url('kepala/guru') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= url_is('kepala/guru*') ? 'bg-blue-50 text-blue-600 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
                         <i data-lucide="user-cog" class="w-5 h-5"></i>
                         <span>Data Guru</span>
                     </a>
-                    <a href="<?= base_url('kepala/kelas') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all">
+                    <a href="<?= base_url('kepala/kelas') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= url_is('kepala/kelas*') ? 'bg-blue-50 text-blue-600 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
                         <i data-lucide="door-open" class="w-5 h-5"></i>
                         <span>Data Kelas</span>
                     </a>
-                    <a href="<?= base_url('kepala/wali') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all">
+                    <a href="<?= base_url('kepala/wali') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= url_is('kepala/wali*') ? 'bg-blue-50 text-blue-600 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
                         <i data-lucide="contact-2" class="w-5 h-5"></i>
                         <span>Data Wali</span>
                     </a>
                     
                     <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Laporan</div>
-                    <a href="<?= base_url('kepala/nilai') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all">
+                    <a href="<?= base_url('kepala/nilai') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= url_is('kepala/nilai*') ? 'bg-blue-50 text-blue-600 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
                         <i data-lucide="file-text" class="w-5 h-5"></i>
                         <span>Rekap Nilai</span>
                     </a>
@@ -57,11 +57,11 @@
 
                 <?php if ($role === 'guru') : ?>
                     <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Penilaian</div>
-                    <a href="<?= base_url('guru/input-nilai') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all">
+                    <a href="<?= base_url('guru/input-nilai') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= url_is('guru/input-nilai*') || url_is('guru/nilai*') ? 'bg-blue-50 text-blue-600 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
                         <i data-lucide="edit-3" class="w-5 h-5"></i>
                         <span>Input Nilai</span>
                     </a>
-                    <a href="<?= base_url('guru/absensi') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all">
+                    <a href="<?= base_url('guru/absensi') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= url_is('guru/absensi*') ? 'bg-blue-50 text-blue-600 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
                         <i data-lucide="calendar-check" class="w-5 h-5"></i>
                         <span>Absensi</span>
                     </a>
@@ -69,14 +69,14 @@
 
                 <?php if ($role === 'wali') : ?>
                     <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Info Anak</div>
-                    <a href="<?= base_url('wali/raport') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all">
+                    <a href="<?= base_url('wali/raport') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= url_is('wali/raport*') ? 'bg-blue-50 text-blue-600 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
                         <i data-lucide="book-open" class="w-5 h-5"></i>
                         <span>Lihat Raport</span>
                     </a>
                 <?php endif; ?>
 
                 <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">System</div>
-                <a href="<?= base_url('announcements') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all">
+                <a href="<?= base_url('announcements') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= url_is('announcements*') ? 'bg-blue-50 text-blue-600 font-medium' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' ?>">
                     <i data-lucide="megaphone" class="w-5 h-5"></i>
                     <span>Pengumuman</span>
                 </a>
