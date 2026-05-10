@@ -41,8 +41,14 @@
 
             <button type="submit"
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-blue-200 focus:ring-4 focus:ring-blue-100">
-                Sign In
+                Masuk
             </button>
+
+            <div class="text-center">
+                <a href="<?= base_url('auth/forgot-password') ?>" class="text-sm text-blue-600 hover:underline font-medium">
+                    Lupa Password?
+                </a>
+            </div>
         </form>
 
         <div class="mt-8 text-center text-sm text-slate-400">

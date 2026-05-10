@@ -32,10 +32,18 @@
                 <h4 class="font-bold text-slate-800 text-lg mb-1"><?= $c['name'] ?></h4>
                 <p class="text-slate-400 text-xs mb-6 uppercase tracking-wider font-bold">Wali Kelas: <?= session()->get('name') ?></p>
                 
-                <a href="<?= base_url('guru/absensi/input/' . $c['id']) ?>" class="w-full bg-slate-50 hover:bg-blue-600 hover:text-white text-slate-600 font-bold py-3 rounded-xl transition-all flex items-center justify-center space-x-2">
-                    <i data-lucide="calendar-check" class="w-4 h-4"></i>
-                    <span>Input Absensi</span>
-                </a>
+                <div class="flex gap-2 mt-auto">
+                    <a href="<?= base_url('guru/absensi/input/' . $c['id']) ?>"
+                       class="flex-1 bg-slate-50 hover:bg-blue-600 hover:text-white text-slate-600 font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 text-sm">
+                        <i data-lucide="calendar-check" class="w-4 h-4"></i>
+                        Input
+                    </a>
+                    <a href="<?= base_url('guru/absensi/rekap/' . $c['id']) ?>"
+                       class="flex-1 bg-slate-50 hover:bg-green-600 hover:text-white text-slate-600 font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 text-sm">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                        Rekap
+                    </a>
+                </div>
             </div>
         <?php endforeach; ?>
     <?php endif; ?>

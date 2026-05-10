@@ -60,8 +60,10 @@ class Spp extends BaseController
 
     public function pay()
     {
-        $id = $this->request->getPost('spp_id');
-        $amount_paid = $this->request->getPost('amount_paid');
+        $id            = $this->request->getPost('spp_id');
+        $amount_paid   = $this->request->getPost('amount_paid');
+        $paymentMethod = $this->request->getPost('payment_method') ?? 'cash';
+        $proofNote     = $this->request->getPost('proof_note') ?? '';
         
         $sppModel = new SppModel();
         $historyModel = new SppHistoryModel();
@@ -71,11 +73,13 @@ class Spp extends BaseController
             return redirect()->back()->with('error', 'Tagihan tidak ditemukan');
         }
 
-        // Save history
+        // Simpan riwayat pembayaran beserta metode
         $historyModel->insert([
             'spp_payment_id' => $id,
-            'amount_paid' => $amount_paid,
-            'payment_date' => date('Y-m-d H:i:s')
+            'amount_paid'    => $amount_paid,
+            'payment_method' => in_array($paymentMethod, ['cash', 'transfer', 'qris']) ? $paymentMethod : 'cash',
+            'proof_note'     => $proofNote,
+            'payment_date'   => date('Y-m-d H:i:s'),
         ]);
 
         // Update total paid and status

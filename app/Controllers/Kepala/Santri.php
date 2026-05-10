@@ -46,11 +46,8 @@ class Santri extends BaseController
     {
         $rules = [
             'name'     => 'required',
-            'nisn'     => 'required|is_unique[santri.nisn]',
             'class_id' => 'required',
-            'wali_id'  => 'required',
             'gender'   => 'required',
-            'address'  => 'required'
         ];
 
         if (!$this->validate($rules)) {
@@ -58,15 +55,26 @@ class Santri extends BaseController
         }
 
         $santriId = $this->santriModel->insert([
-            'name'     => $this->request->getPost('name'),
-            'nisn'     => $this->request->getPost('nisn'),
-            'class_id' => $this->request->getPost('class_id'),
-            'wali_id'  => $this->request->getPost('wali_id'),
-            'gender'   => $this->request->getPost('gender'),
-            'address'  => $this->request->getPost('address')
+            'name'               => $this->request->getPost('name'),
+            'nickname'           => $this->request->getPost('nickname'),
+            'nisn'               => $this->request->getPost('nisn'),
+            'gender'             => $this->request->getPost('gender'),
+            'birth_place'        => $this->request->getPost('birth_place'),
+            'birth_date'         => $this->request->getPost('birth_date') ?: null,
+            'child_order'        => $this->request->getPost('child_order') ?: null,
+            'child_status'       => $this->request->getPost('child_status'),
+            'enter_tka_a'        => $this->request->getPost('enter_tka_a') ?: null,
+            'enter_tka_b'        => $this->request->getPost('enter_tka_b') ?: null,
+            'exit_tka_a'         => $this->request->getPost('exit_tka_a') ?: null,
+            'exit_tka_b'         => $this->request->getPost('exit_tka_b') ?: null,
+            'agama'              => $this->request->getPost('agama') ?: 'Islam',
+            'parent_education'   => $this->request->getPost('parent_education'),
+            'parent_occupation'  => $this->request->getPost('parent_occupation'),
+            'class_id'           => $this->request->getPost('class_id'),
+            'wali_id'            => $this->request->getPost('wali_id') ?: null,
+            'address'            => $this->request->getPost('address'),
         ]);
 
-        // Automatically generate SPP bill for the current month
         if ($santriId) {
             $this->syncSpp($santriId);
             $this->activityLog->log('Tambah Santri', "Menambahkan santri baru: " . $this->request->getPost('name'));
@@ -88,35 +96,100 @@ class Santri extends BaseController
 
     public function update($id)
     {
-        $rules = [
-            'name'     => 'required',
-            'nisn'     => "required|is_unique[santri.nisn,id,{$id}]",
-            'class_id' => 'required',
-            'wali_id'  => 'required',
-            'gender'   => 'required',
-            'address'  => 'required'
-        ];
+        $rules = ['name' => 'required', 'class_id' => 'required', 'gender' => 'required'];
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
         $this->santriModel->save([
-            'id'       => $id,
-            'name'     => $this->request->getPost('name'),
-            'nisn'     => $this->request->getPost('nisn'),
-            'class_id' => $this->request->getPost('class_id'),
-            'wali_id'  => $this->request->getPost('wali_id'),
-            'gender'   => $this->request->getPost('gender'),
-            'address'  => $this->request->getPost('address')
+            'id'                 => $id,
+            'name'               => $this->request->getPost('name'),
+            'nickname'           => $this->request->getPost('nickname'),
+            'nisn'               => $this->request->getPost('nisn'),
+            'gender'             => $this->request->getPost('gender'),
+            'birth_place'        => $this->request->getPost('birth_place'),
+            'birth_date'         => $this->request->getPost('birth_date') ?: null,
+            'child_order'        => $this->request->getPost('child_order') ?: null,
+            'child_status'       => $this->request->getPost('child_status'),
+            'enter_tka_a'        => $this->request->getPost('enter_tka_a') ?: null,
+            'enter_tka_b'        => $this->request->getPost('enter_tka_b') ?: null,
+            'exit_tka_a'         => $this->request->getPost('exit_tka_a') ?: null,
+            'exit_tka_b'         => $this->request->getPost('exit_tka_b') ?: null,
+            'agama'              => $this->request->getPost('agama') ?: 'Islam',
+            'parent_education'   => $this->request->getPost('parent_education'),
+            'parent_occupation'  => $this->request->getPost('parent_occupation'),
+            'class_id'           => $this->request->getPost('class_id'),
+            'wali_id'            => $this->request->getPost('wali_id') ?: null,
+            'address'            => $this->request->getPost('address'),
         ]);
 
-        // Sync SPP bill in case class changed
         $this->syncSpp($id);
-
         $this->activityLog->log('Update Santri', "Memperbarui data santri: " . $this->request->getPost('name'));
 
         return redirect()->to('/kepala/santri')->with('success', 'Data santri berhasil diupdate.');
+    }
+
+    /**
+     * Export data santri ke CSV sesuai format Kartu Data Santri TKA/TPA
+     */
+    public function export()
+    {
+        $santris = $this->santriModel
+            ->select('santri.*, classes.name as class_name, users.name as wali_name')
+            ->join('classes', 'classes.id = santri.class_id', 'left')
+            ->join('users', 'users.id = santri.wali_id', 'left')
+            ->orderBy('santri.name', 'ASC')
+            ->findAll();
+
+        $filename = 'DataSantri_' . date('Ymd_His') . '.csv';
+
+        // Set headers for CSV download
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        // BOM untuk Excel agar UTF-8 terbaca dengan benar
+        echo "\xEF\xBB\xBF";
+
+        $out = fopen('php://output', 'w');
+
+        // Header CSV sesuai kolom Kartu Data Santri TKA/TPA
+        fputcsv($out, [
+            'No', 'Nama Lengkap', 'Nama Panggilan', 'NIS', 'Jenis Kelamin',
+            'Tempat Lahir', 'Tanggal Lahir', 'Anak Ke-', 'Status Anak',
+            'Masuk Paket A', 'Masuk Paket B', 'Keluar Paket A', 'Keluar Paket B',
+            'Agama', 'Alamat', 'Nama Wali', 'Pendidikan Ortu', 'Pekerjaan Ortu',
+            'Kelas'
+        ]);
+
+        foreach ($santris as $i => $s) {
+            fputcsv($out, [
+                $i + 1,
+                $s['name'],
+                $s['nickname'] ?? '-',
+                $s['nisn'] ?? '-',
+                $s['gender'] === 'L' ? 'Laki-laki' : 'Perempuan',
+                $s['birth_place'] ?? '-',
+                !empty($s['birth_date']) ? date('d/m/Y', strtotime($s['birth_date'])) : '-',
+                $s['child_order'] ?? '-',
+                $s['child_status'] ?? '-',
+                !empty($s['enter_tka_a']) ? date('d/m/Y', strtotime($s['enter_tka_a'])) : '-',
+                !empty($s['enter_tka_b']) ? date('d/m/Y', strtotime($s['enter_tka_b'])) : '-',
+                !empty($s['exit_tka_a'])  ? date('d/m/Y', strtotime($s['exit_tka_a']))  : '-',
+                !empty($s['exit_tka_b'])  ? date('d/m/Y', strtotime($s['exit_tka_b']))  : '-',
+                $s['agama'] ?? 'Islam',
+                $s['address'] ?? '-',
+                $s['wali_name'] ?? '-',
+                $s['parent_education'] ?? '-',
+                $s['parent_occupation'] ?? '-',
+                $s['class_name'] ?? '-',
+            ]);
+        }
+
+        fclose($out);
+        exit;
     }
 
     public function show($id)

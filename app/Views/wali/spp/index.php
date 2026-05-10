@@ -99,28 +99,67 @@
                 </button>
             </div>
         </div>
-        <form action="<?= base_url('wali/spp/pay') ?>" method="post" class="p-8 space-y-6">
+        <form action="<?= base_url('wali/spp/pay') ?>" method="post" class="p-8 space-y-5">
             <?= csrf_field() ?>
             <input type="hidden" name="spp_id" id="modal_spp_id">
-            
+
+            <!-- Nama Santri -->
             <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Nama Santri</label>
-                <input type="text" id="modal_santri_name" readonly class="w-full bg-slate-50 border-0 rounded-2xl px-6 py-4 text-slate-600 font-bold focus:ring-0">
+                <input type="text" id="modal_santri_name" readonly
+                       class="w-full bg-slate-50 border-0 rounded-2xl px-5 py-3 text-slate-600 font-bold focus:ring-0">
             </div>
 
+            <!-- Jumlah Bayar -->
             <div>
-                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 text-center">Jumlah Pembayaran (Rp)</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Jumlah Pembayaran (Rp)</label>
                 <div class="relative">
-                    <span class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-slate-300">Rp</span>
-                    <input type="number" name="amount_paid" id="modal_amount_paid" required 
-                        class="w-full bg-slate-50 border-0 rounded-3xl pl-16 pr-8 py-6 focus:ring-4 focus:ring-blue-500/10 transition-all text-3xl font-black text-blue-600 text-center outline-none" 
-                        placeholder="0">
+                    <span class="absolute left-5 top-1/2 -translate-y-1/2 text-xl font-black text-slate-300">Rp</span>
+                    <input type="number" name="amount_paid" id="modal_amount_paid" required
+                           class="w-full bg-slate-50 border-0 rounded-2xl pl-14 pr-5 py-4 focus:ring-4 focus:ring-blue-500/10 transition-all text-2xl font-black text-blue-600 outline-none"
+                           placeholder="0">
                 </div>
-                <p id="modal_remaining" class="text-center text-[10px] text-slate-400 mt-4 font-medium uppercase tracking-wider"></p>
+                <p id="modal_remaining" class="text-[10px] text-slate-400 mt-2 font-medium uppercase tracking-wider"></p>
             </div>
 
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-3xl transition-all shadow-xl shadow-blue-500/20 active:scale-95 duration-150">
-                Bayar Sekarang
+            <!-- Metode Pembayaran -->
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Metode Pembayaran</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <?php
+                    $methods = [
+                        'cash'     => ['icon' => '💵', 'label' => 'Tunai'],
+                        'transfer' => ['icon' => '🏦', 'label' => 'Transfer'],
+                        'qris'     => ['icon' => '📱', 'label' => 'QRIS'],
+                    ];
+                    foreach ($methods as $val => $m) :
+                    ?>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="payment_method" value="<?= $val ?>"
+                                   <?= $val === 'cash' ? 'checked' : '' ?> class="sr-only peer">
+                            <div class="flex flex-col items-center gap-1.5 p-3 border-2 border-slate-200 rounded-xl
+                                        peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-blue-300 transition-all cursor-pointer">
+                                <span class="text-2xl"><?= $m['icon'] ?></span>
+                                <span class="text-xs font-semibold text-slate-600"><?= $m['label'] ?></span>
+                            </div>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <!-- Catatan -->
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+                    Catatan <span class="font-normal text-slate-300">(opsional: nomor referensi transfer, dll)</span>
+                </label>
+                <input type="text" name="proof_note" id="modal_proof_note"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                       placeholder="Contoh: Transfer via BCA No. Ref 123456">
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-blue-500/20 active:scale-95 duration-150">
+                Konfirmasi Pembayaran
             </button>
         </form>
     </div>
@@ -128,15 +167,22 @@
 
 <script>
     function openPaymentModal(id, name, remaining) {
-        document.getElementById('modal_spp_id').value = id;
+        document.getElementById('modal_spp_id').value      = id;
         document.getElementById('modal_santri_name').value = name;
         document.getElementById('modal_amount_paid').value = remaining;
-        document.getElementById('modal_remaining').innerText = 'Sisa Tagihan: Rp ' + remaining.toLocaleString('id-ID');
+        document.getElementById('modal_proof_note').value  = '';
+        document.getElementById('modal_remaining').innerText =
+            'Sisa Tagihan: Rp ' + Number(remaining).toLocaleString('id-ID');
         document.getElementById('paymentModal').classList.remove('hidden');
     }
 
     function closePaymentModal() {
         document.getElementById('paymentModal').classList.add('hidden');
     }
+
+    // Tutup modal saat klik di luar
+    document.getElementById('paymentModal').addEventListener('click', function(e) {
+        if (e.target === this) closePaymentModal();
+    });
 </script>
 <?= $this->endSection() ?>

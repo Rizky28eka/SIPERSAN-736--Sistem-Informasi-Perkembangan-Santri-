@@ -114,4 +114,51 @@ class Absensi extends BaseController
 
         return redirect()->to('guru/absensi/input/' . $classId . '?date=' . $date)->with('success', 'Absensi berhasil disimpan.');
     }
+
+    /**
+     * Rekapitulasi absensi per santri dalam satu kelas
+     * Menampilkan ringkasan: Hadir, Sakit, Izin, Alfa, dan Total kehadiran
+     */
+    public function rekap(int $classId)
+    {
+        $teacherId = session()->get('user_id');
+        $class     = $this->classModel->where(['id' => $classId, 'teacher_id' => $teacherId])->first();
+
+        if (!$class) {
+            return redirect()->to('guru/absensi')->with('error', 'Kelas tidak ditemukan atau bukan kelas Anda.');
+        }
+
+        $activeYear = $this->academicYearModel->where('status', 'active')->first();
+        if (!$activeYear) {
+            return redirect()->to('guru/absensi')->with('error', 'Tahun ajaran aktif tidak ditemukan.');
+        }
+
+        $santris = $this->santriModel->where('class_id', $classId)->findAll();
+
+        // Hitung rekap per santri dari data attendance real
+        $rekap = [];
+        foreach ($santris as $s) {
+            $allAtt = $this->attendanceModel->where([
+                'santri_id'        => $s['id'],
+                'academic_year_id' => $activeYear['id'],
+            ])->findAll();
+
+            $summary = ['Hadir' => 0, 'Sakit' => 0, 'Izin' => 0, 'Alpa' => 0, 'total' => 0];
+            foreach ($allAtt as $att) {
+                $status = $att['status'];
+                if (isset($summary[$status])) {
+                    $summary[$status]++;
+                }
+                $summary['total']++;
+            }
+            $rekap[] = ['santri' => $s, 'summary' => $summary];
+        }
+
+        return view('guru/absensi/rekap', [
+            'title'      => 'Rekap Absensi - ' . $class['name'],
+            'class'      => $class,
+            'rekap'      => $rekap,
+            'activeYear' => $activeYear,
+        ]);
+    }
 }

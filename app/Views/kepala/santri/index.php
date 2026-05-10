@@ -1,12 +1,25 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<div class="flex justify-between items-center mb-6">
-    <h3 class="text-xl font-bold text-slate-800">Daftar Santri</h3>
-    <a href="<?= base_url('kepala/santri/create') ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-all flex items-center space-x-2">
-        <i data-lucide="plus" class="w-4 h-4"></i>
-        <span>Tambah Santri</span>
-    </a>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div>
+        <h3 class="text-xl font-bold text-slate-800">Daftar Santri</h3>
+        <p class="text-sm text-slate-400 mt-1">Total <?= count($santris) ?> santri terdaftar</p>
+    </div>
+    <div class="flex items-center gap-3">
+        <!-- Tombol Export CSV -->
+        <a href="<?= base_url('kepala/santri/export') ?>"
+           class="flex items-center gap-2 border border-green-300 bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-xl text-sm font-medium transition-all">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            Export CSV
+        </a>
+        <!-- Tombol Tambah -->
+        <a href="<?= base_url('kepala/santri/create') ?>"
+           class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-all text-sm font-medium">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Tambah Santri
+        </a>
+    </div>
 </div>
 
 <?php if (session()->getFlashdata('success')) : ?>
@@ -55,14 +68,26 @@
                             <td class="px-6 py-4 text-sm text-slate-600"><?= $s['class_name'] ?? '<span class="text-red-400">?</span>' ?></td>
                             <td class="px-6 py-4 text-sm text-slate-600"><?= $s['wali_name'] ?? '<span class="text-red-400">?</span>' ?></td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex justify-end space-x-2">
-                                    <a href="<?= base_url('kepala/santri/detail/' . $s['id']) ?>" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Detail">
+                                <div class="flex justify-end items-center gap-1">
+                                    <!-- Detail -->
+                                    <a href="<?= base_url('kepala/santri/detail/' . $s['id']) ?>"
+                                       class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Detail">
                                         <i data-lucide="eye" class="w-4 h-4"></i>
                                     </a>
-                                    <a href="<?= base_url('kepala/santri/edit/' . $s['id']) ?>" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit">
+                                    <!-- Cetak Raport -->
+                                    <a href="<?= base_url('kepala/santri/print/' . $s['id']) ?>" target="_blank"
+                                       class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-all" title="Cetak Raport">
+                                        <i data-lucide="printer" class="w-4 h-4"></i>
+                                    </a>
+                                    <!-- Edit -->
+                                    <a href="<?= base_url('kepala/santri/edit/' . $s['id']) ?>"
+                                       class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit">
                                         <i data-lucide="edit-2" class="w-4 h-4"></i>
                                     </a>
-                                    <form action="<?= base_url('kepala/santri/delete/' . $s['id']) ?>" method="post" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                    <!-- Hapus -->
+                                    <form action="<?= base_url('kepala/santri/delete/' . $s['id']) ?>" method="post"
+                                          class="inline" onsubmit="return confirm('Hapus data santri ini?')">
+                                        <?= csrf_field() ?>
                                         <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Hapus">
                                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                                         </button>

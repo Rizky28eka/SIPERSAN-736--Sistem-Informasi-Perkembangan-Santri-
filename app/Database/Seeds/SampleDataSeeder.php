@@ -99,26 +99,50 @@ class SampleDataSeeder extends Seeder
             $classIds[] = $this->db->insertID();
         }
 
-        // 4. Create Santris (20 Santris, distributed)
-        $santriNames = [
-            'Muhammad Fatih Al-Ayubi', 'Annisa Rahmawati', 'Hamzah bin Abdul Muthalib', 'Zaidan Al-Ghifari',
-            'Aisyah Humaira', 'Bilal bin Rabah', 'Yusuf Mansur Jr.', 'Maryam Azzahra',
-            'Ibrahim Khalil', 'Sarah Sholiha', 'Hasan Al-Banna', 'Husain Al-Mujtaba',
-            'Khairunnisa', 'Raihan Ananda', 'Thariq bin Ziyad', 'Khalid bin Walid',
-            'Sumayyah binti Khayyat', 'Umar bin Abdul Aziz', 'Abdurrahman bin Auf', 'Usman bin Affan'
+        // 4. Create Santris (20 Santris) - data lengkap sesuai Kartu Data Santri TKA/TPA
+        $santriData = [
+            // [nama, panggilan, birth_place, birth_date, child_order, gender]
+            ['Muhammad Fatih Al-Ayubi',     'Fatih',     'Banyuasin', '2015-03-10', 1, 'L'],
+            ['Annisa Rahmawati',            'Annisa',    'Palembang', '2016-07-22', 2, 'P'],
+            ['Hamzah bin Abdul Muthalib',   'Hamzah',    'Banyuasin', '2015-11-05', 1, 'L'],
+            ['Zaidan Al-Ghifari',           'Zaidan',    'Musi Banyuasin', '2016-01-14', 3, 'L'],
+            ['Aisyah Humaira',              'Aisyah',    'Palembang', '2015-08-19', 1, 'P'],
+            ['Bilal bin Rabah',             'Bilal',     'Banyuasin', '2016-04-30', 2, 'L'],
+            ['Yusuf Mansur Jr.',            'Yusuf',     'Sekayu',    '2015-06-15', 1, 'L'],
+            ['Maryam Azzahra',              'Maryam',    'Banyuasin', '2016-09-08', 2, 'P'],
+            ['Ibrahim Khalil',              'Ibrahim',   'Palembang', '2015-12-25', 1, 'L'],
+            ['Sarah Sholiha',               'Sarah',     'Banyuasin', '2016-02-14', 1, 'P'],
+            ['Hasan Al-Banna',              'Hasan',     'Musi Rawas','2015-05-07', 2, 'L'],
+            ['Husain Al-Mujtaba',           'Husain',    'Banyuasin', '2016-10-18', 3, 'L'],
+            ['Khairunnisa',                 'Nisa',      'Palembang', '2015-07-11', 1, 'P'],
+            ['Raihan Ananda',               'Raihan',    'Banyuasin', '2016-03-26', 2, 'L'],
+            ['Thariq bin Ziyad',            'Thariq',    'Sekayu',    '2015-09-13', 1, 'L'],
+            ['Khalid bin Walid',            'Khalid',    'Banyuasin', '2016-06-04', 2, 'L'],
+            ['Sumayyah binti Khayyat',      'Sumayyah',  'Palembang', '2015-04-21', 3, 'P'],
+            ['Umar bin Abdul Aziz',         'Umar',      'Banyuasin', '2016-08-16', 1, 'L'],
+            ['Abdurrahman bin Auf',         'Abdur',     'Musi Banyuasin','2015-10-29', 2, 'L'],
+            ['Usman bin Affan',             'Usman',     'Banyuasin', '2016-11-01', 1, 'L'],
         ];
         $santriIds = [];
-        foreach ($santriNames as $i => $name) {
+        foreach ($santriData as $i => $sd) {
             $cId = $classIds[$i % 5];
             $wId = $waliIds[$i % 10];
             $this->db->table('santri')->insert([
-                'name' => $name,
-                'nisn' => '2024' . str_pad($i + 1, 3, '0', STR_PAD_LEFT),
-                'gender' => ($i % 2 == 0) ? 'L' : 'P',
-                'class_id' => $cId,
-                'wali_id' => $wId,
-                'address' => 'Jl. Pendidikan No. ' . ($i + 1),
-                'created_at' => date('Y-m-d H:i:s'),
+                'name'              => $sd[0],
+                'nickname'          => $sd[1],
+                'nisn'              => str_pad($i + 401, 4, '0', STR_PAD_LEFT), // misal 0401, 0402...
+                'gender'            => $sd[5],
+                'birth_place'       => $sd[2],
+                'birth_date'        => $sd[3],
+                'child_order'       => $sd[4],
+                'child_status'      => 'Anak Kandung',
+                'enter_tka_a'       => '2022-07-18', // Masuk Paket A
+                'agama'             => 'Islam',
+                'class_id'          => $cId,
+                'wali_id'           => $wId,
+                'address'           => 'Jl. Sukawar RT 10/RW 02, Banyuasin',
+                'parent_occupation' => ['Pedagang', 'PNS', 'Petani', 'Wiraswasta'][$i % 4],
+                'created_at'        => date('Y-m-d H:i:s'),
             ]);
             $santriIds[] = $this->db->insertID();
         }

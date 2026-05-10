@@ -12,7 +12,17 @@ class DevelopmentModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['santri_id', 'academic_year_id', 'category', 'description'];
+    protected $allowedFields = [
+        'santri_id', 'academic_year_id',
+        // Kepribadian (B=Baik, C=Cukup, K=Kurang) - sesuai rapor TKA/TPA
+        'disiplin', 'jujur', 'kerja_sama', 'rajin', 'kemampuan_berfikir',
+        // Kegiatan Ekstra Kurikulum
+        'ekskul_1', 'ekskul_1_nilai', 'ekskul_2', 'ekskul_2_nilai', 'ekskul_3', 'ekskul_3_nilai',
+        // Ketidakhadiran (dalam hari)
+        'sakit_hari', 'izin_hari', 'tanpa_keterangan_hari',
+        // Catatan teks (kolom lama dipertahankan)
+        'extracurricular', 'personality', 'teacher_notes',
+    ];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

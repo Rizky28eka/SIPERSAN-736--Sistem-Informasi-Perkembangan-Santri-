@@ -12,7 +12,12 @@ class SantriModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'nisn', 'class_id', 'wali_id', 'gender', 'address'];
+    protected $allowedFields = [
+        'name', 'nickname', 'nisn', 'class_id', 'wali_id', 'gender',
+        'birth_place', 'birth_date', 'child_order', 'child_status',
+        'enter_tka_a', 'enter_tka_b', 'exit_tka_a', 'exit_tka_b',
+        'agama', 'parent_education', 'parent_occupation', 'address',
+    ];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
