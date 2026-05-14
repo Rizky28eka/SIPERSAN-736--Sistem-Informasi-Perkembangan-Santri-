@@ -49,20 +49,14 @@
                             </td>
                             <td class="px-6 py-3">
                                 <div class="flex items-center gap-3">
-                                    <input type="text" inputmode="numeric" pattern="[0-9]*"
-                                           name="grades[<?= esc($cat) ?>][score_numeric]" 
-                                           value="<?= $scoreNumeric ?>" 
-                                           data-saved-value="<?= $scoreNumeric ?>"
-                                           placeholder="Angka (0-100)"
-                                           data-cat-id="<?= md5($cat) ?>"
-                                           onclick="this.select()"
-                                           oninput="validateAndFill(this)"
-                                           class="score-input w-32 bg-white border border-slate-200 rounded-lg px-3 py-2 text-center font-bold text-slate-800 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all">
-                                    
-                                    <span id="letter-<?= md5($cat) ?>" class="inline-block min-w-[40px] px-3 py-2 text-center rounded-lg font-bold <?= getLeterBadgeClass($scoreLetter) ?>">
-                                        <?= $scoreLetter ?: '-' ?>
-                                    </span>
-                                    <input type="hidden" name="grades[<?= esc($cat) ?>][score_letter]" id="letter-input-<?= md5($cat) ?>" value="<?= $scoreLetter ?: '-' ?>">
+                                    <select name="grades[<?= esc($cat) ?>][score_letter]" 
+                                            class="w-32 bg-white border border-slate-200 rounded-lg px-3 py-2 text-center font-bold text-slate-800 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all">
+                                        <option value="-">-</option>
+                                        <?php foreach (['A', 'B', 'C', 'D', 'E'] as $l) : ?>
+                                            <option value="<?= $l ?>" <?= $scoreLetter === $l ? 'selected' : '' ?>><?= $l ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <input type="hidden" name="grades[<?= esc($cat) ?>][score_numeric]" value="0">
                                 </div>
                             </td>
                         </tr>
@@ -177,49 +171,7 @@
 </form>
 
 <script>
-function validateAndFill(input) {
-    input.value = input.value.replace(/[^0-9]/g, '');
-    var val = parseInt(input.value);
-    if (!isNaN(val) && val > 100) {
-        input.value = '100';
-        val = 100;
-    }
-
-    var catId = input.getAttribute('data-cat-id');
-    var letterSpan = document.getElementById('letter-' + catId);
-    var letterInput = document.getElementById('letter-input-' + catId);
-    var letter = '-';
-    var badgeClass = 'bg-slate-100 text-slate-400';
-
-    if (!isNaN(val) && input.value !== '') {
-        if (val >= 90) { letter = 'A'; badgeClass = 'bg-emerald-100 text-emerald-700'; }
-        else if (val >= 80) { letter = 'B'; badgeClass = 'bg-blue-100 text-blue-700'; }
-        else if (val >= 70) { letter = 'C'; badgeClass = 'bg-amber-100 text-amber-700'; }
-        else if (val >= 60) { letter = 'D'; badgeClass = 'bg-orange-100 text-orange-700'; }
-        else { letter = 'E'; badgeClass = 'bg-red-100 text-red-700'; }
-    }
-
-    if(letterSpan && letterInput) {
-        letterSpan.textContent = letter;
-        letterSpan.className = 'inline-block min-w-[40px] px-3 py-2 text-center rounded-lg font-bold ' + badgeClass;
-        letterInput.value = letter;
-    }
-}
-
-function restoreAllValues() {
-    document.querySelectorAll('.score-input').forEach(function(input) {
-        var savedValue = input.getAttribute('data-saved-value');
-        input.value = savedValue;
-        if (savedValue !== '') {
-            validateAndFill(input);
-        }
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    restoreAllValues();
-    setTimeout(restoreAllValues, 50);
-});
+// Numeric validation removed as UI changed to A-E dropdown
 </script>
 
 <?php

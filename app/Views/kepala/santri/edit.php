@@ -83,6 +83,29 @@
                 </div>
 
                 <div>
+                    <label for="parent_education" class="block text-sm font-semibold text-slate-700 mb-2">Pendidikan Ortu</label>
+                    <select name="parent_education" id="parent_education" 
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-slate-600 appearance-none bg-white">
+                        <option value="">-- Pilih --</option>
+                        <?php
+                        $educations = ['Tidak Sekolah', 'SD/MI', 'SMP/MTs', 'SMA/SMK/MA', 'D1/D2/D3', 'S1/D4', 'S2', 'S3'];
+                        foreach ($educations as $edu) :
+                        ?>
+                            <option value="<?= $edu ?>" <?= old('parent_education', $santri['parent_education'] ?? '') === $edu ? 'selected' : '' ?>>
+                                <?= $edu ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="parent_occupation" class="block text-sm font-semibold text-slate-700 mb-2">Pekerjaan Ortu</label>
+                    <input type="text" name="parent_occupation" id="parent_occupation" value="<?= old('parent_occupation', $santri['parent_occupation'] ?? '') ?>" 
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-slate-600"
+                        placeholder="Pekerjaan orang tua">
+                </div>
+
+                <div>
                     <label for="address" class="block text-sm font-semibold text-slate-700 mb-2">Alamat</label>
                     <textarea name="address" id="address" rows="1"
                         class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-slate-600"

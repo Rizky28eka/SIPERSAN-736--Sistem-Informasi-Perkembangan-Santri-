@@ -111,7 +111,10 @@ class Auth extends BaseController
             <small>SIPERSAN - Sistem Informasi Perkembangan Santri</small>
         ");
         $emailLib->setMailType('html');
-        $emailLib->send();
+        
+        if (!$emailLib->send()) {
+            log_message('error', 'Gagal mengirim email reset password ke: ' . $email . '. Error: ' . $emailLib->printDebugger(['headers']));
+        }
 
         return redirect()->back()->with('success', $successMsg);
     }

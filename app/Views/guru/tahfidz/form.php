@@ -61,6 +61,15 @@
                        value="<?= esc(old('name', $item['name'] ?? '')) ?>">
             </div>
 
+            <!-- Konten / Isi Materi -->
+            <div>
+                <label for="content" class="block text-sm font-medium text-slate-700 mb-2">Isi Materi / Tulisan Arab <span class="text-slate-400 font-normal">(opsional)</span></label>
+                <textarea name="content" id="content" rows="4" dir="rtl"
+                          class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none text-right font-serif text-lg"
+                          placeholder="Masukkan teks Arab atau isi materi..."><?= esc(old('content', $item['content'] ?? '')) ?></textarea>
+                <p class="text-[10px] text-slate-400 mt-1 italic">Gunakan keyboard Arab jika diperlukan. Teks akan ditampilkan dari kanan (RTL).</p>
+            </div>
+
             <!-- Urutan -->
             <div>
                 <label for="sort_order" class="block text-sm font-medium text-slate-700 mb-2">Urutan <span class="text-slate-400 font-normal">(opsional)</span></label>

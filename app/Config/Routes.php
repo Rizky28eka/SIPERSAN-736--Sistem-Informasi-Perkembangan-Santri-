@@ -122,11 +122,12 @@ $routes->group('guru', ['filter' => 'auth:guru'], function ($routes) {
     $routes->get('tahfidz/input/(:num)',    'Guru\Tahfidz::input/$1');
     $routes->post('tahfidz/input/store',   'Guru\Tahfidz::storeInput');
 
-    // Catatan Perkembangan Santri
+    // Catatan Perkembangan Harian
     $routes->get('perkembangan',                    'Guru\Perkembangan::index');
-    $routes->get('perkembangan/form/(:num)',        'Guru\Perkembangan::form/$1');
-    $routes->post('perkembangan/save',              'Guru\Perkembangan::save');
-    $routes->post('perkembangan/delete/(:num)',     'Guru\Perkembangan::delete/$1');
+    $routes->get('perkembangan/list/(:num)',        'Guru\Perkembangan::list/$1');
+    $routes->get('perkembangan/detail/(:num)',      'Guru\Perkembangan::detail/$1');
+    $routes->post('perkembangan/store',             'Guru\Perkembangan::store');
+    $routes->get('perkembangan/delete/(:num)',      'Guru\Perkembangan::delete/$1');
 });
 
 // ─── WALI ROUTES ──────────────────────────────────────────────────────────────
@@ -134,6 +135,7 @@ $routes->group('wali', ['filter' => 'auth:wali'], function ($routes) {
     $routes->get('dashboard',               'Wali\Dashboard::index');
     $routes->get('raport',                  'Wali\Raport::index');
     $routes->get('raport/detail/(:num)',    'Wali\Raport::detail/$1');
+    $routes->get('perkembangan',            'Wali\Perkembangan::index');
     $routes->get('spp',                     'Wali\Spp::index');
     $routes->get('spp/history',             'Wali\Spp::history');
     $routes->post('spp/pay',               'Wali\Spp::pay');

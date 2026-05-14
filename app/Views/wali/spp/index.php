@@ -99,7 +99,7 @@
                 </button>
             </div>
         </div>
-        <form action="<?= base_url('wali/spp/pay') ?>" method="post" class="p-8 space-y-5">
+        <form action="<?= base_url('wali/spp/pay') ?>" method="post" enctype="multipart/form-data" class="p-8 space-y-5">
             <?= csrf_field() ?>
             <input type="hidden" name="spp_id" id="modal_spp_id">
 
@@ -125,18 +125,17 @@
             <!-- Metode Pembayaran -->
             <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Metode Pembayaran</label>
-                <div class="grid grid-cols-3 gap-3">
+                <div class="grid grid-cols-2 gap-3">
                     <?php
                     $methods = [
-                        'cash'     => ['icon' => '💵', 'label' => 'Tunai'],
-                        'transfer' => ['icon' => '🏦', 'label' => 'Transfer'],
-                        'qris'     => ['icon' => '📱', 'label' => 'QRIS'],
+                        'transfer' => ['icon' => '🏦', 'label' => 'Transfer Bank'],
+                        'qris'     => ['icon' => '📱', 'label' => 'DANA / QRIS'],
                     ];
                     foreach ($methods as $val => $m) :
                     ?>
                         <label class="cursor-pointer">
                             <input type="radio" name="payment_method" value="<?= $val ?>"
-                                   <?= $val === 'cash' ? 'checked' : '' ?> class="sr-only peer">
+                                   <?= $val === 'transfer' ? 'checked' : '' ?> class="sr-only peer">
                             <div class="flex flex-col items-center gap-1.5 p-3 border-2 border-slate-200 rounded-xl
                                         peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-blue-300 transition-all cursor-pointer">
                                 <span class="text-2xl"><?= $m['icon'] ?></span>
@@ -147,19 +146,27 @@
                 </div>
             </div>
 
+            <!-- Upload Bukti -->
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Upload Bukti Pembayaran</label>
+                <input type="file" name="proof_image" accept="image/*" required
+                       class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all">
+                <p class="text-[9px] text-slate-400 mt-1 italic">*Format: JPG/PNG/WEBP, Max: 2MB</p>
+            </div>
+
             <!-- Catatan -->
             <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-                    Catatan <span class="font-normal text-slate-300">(opsional: nomor referensi transfer, dll)</span>
+                    Catatan <span class="font-normal text-slate-300">(opsional)</span>
                 </label>
                 <input type="text" name="proof_note" id="modal_proof_note"
                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                       placeholder="Contoh: Transfer via BCA No. Ref 123456">
+                       placeholder="Contoh: No Ref 123456">
             </div>
 
             <button type="submit"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-blue-500/20 active:scale-95 duration-150">
-                Konfirmasi Pembayaran
+                Kirim Konfirmasi
             </button>
         </form>
     </div>

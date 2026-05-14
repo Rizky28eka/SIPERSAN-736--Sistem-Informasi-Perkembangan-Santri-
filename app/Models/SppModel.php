@@ -20,7 +20,7 @@ class SppModel extends Model
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
-    public function getSppWithSantri($wali_id = null)
+    public function getSppWithSantri($wali_id = null, $keyword = null)
     {
         $builder = $this->db->table($this->table);
         $builder->select('spp_payments.*, santri.name as santri_name, santri.nisn, classes.name as class_name');
@@ -29,6 +29,13 @@ class SppModel extends Model
         
         if ($wali_id) {
             $builder->where('santri.wali_id', $wali_id);
+        }
+
+        if ($keyword) {
+            $builder->groupStart()
+                    ->like('santri.name', $keyword)
+                    ->orLike('santri.nisn', $keyword)
+                    ->groupEnd();
         }
 
         $builder->orderBy('year', 'DESC');

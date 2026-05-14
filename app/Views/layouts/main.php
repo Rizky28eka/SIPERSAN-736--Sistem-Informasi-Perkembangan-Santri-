@@ -111,6 +111,7 @@
                     <?php
                     $guruLinks = [
                         ['url' => 'guru/input-nilai',    'match' => ['guru/input-nilai', 'guru/nilai/*'], 'icon' => 'edit-3',         'label' => 'Evaluasi Raport'],
+                        ['url' => 'guru/perkembangan',   'match' => ['guru/perkembangan', 'guru/perkembangan/*'], 'icon' => 'line-chart', 'label' => 'Catatan Harian'],
                         ['url' => 'guru/absensi',        'match' => ['guru/absensi', 'guru/absensi/*'],   'icon' => 'calendar-check', 'label' => 'Absensi'],
                         ['url' => 'guru/tahfidz',        'match' => ['guru/tahfidz', 'guru/tahfidz/*'],   'icon' => 'book-marked',    'label' => 'Tahfidz'],
                     ];
@@ -133,6 +134,7 @@
                     <?php
                     $waliLinks = [
                         ['url' => 'wali/raport', 'match' => ['wali/raport', 'wali/raport/*'], 'icon' => 'book-open',  'label' => 'Lihat Raport'],
+                        ['url' => 'wali/perkembangan', 'match' => ['wali/perkembangan', 'wali/perkembangan/*'], 'icon' => 'line-chart', 'label' => 'Catatan Harian'],
                         ['url' => 'wali/spp',    'match' => ['wali/spp', 'wali/spp/*'],       'icon' => 'credit-card','label' => 'Pembayaran SPP'],
                     ];
                     foreach ($waliLinks as $link) :
@@ -324,6 +326,20 @@
             `;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 4000);
+        }
+
+        // ── Password Visibility Toggle ──────────────────────────────────────────
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon  = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = '<i data-lucide="eye-off" class="w-4 h-4"></i>';
+            } else {
+                input.type = 'password';
+                icon.innerHTML = '<i data-lucide="eye" class="w-4 h-4"></i>';
+            }
+            lucide.createIcons();
         }
 
         // Jalankan polling pertama kali saat halaman dimuat

@@ -36,9 +36,14 @@
 
             <div>
                 <label for="password" class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
-                <input type="password" name="password" id="password" 
-                    class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-slate-600"
-                    placeholder="Minimal 6 karakter">
+                <div class="relative">
+                    <input type="password" name="password" id="password" 
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-slate-600"
+                        placeholder="Minimal 6 karakter">
+                    <button type="button" onclick="togglePassword('password', 'eyeIcon')" id="eyeIcon" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                        <i data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                </div>
                 <?php if (isset(session('errors')['password'])) : ?>
                     <p class="text-xs text-red-500 mt-1"><?= session('errors')['password'] ?></p>
                 <?php endif; ?>

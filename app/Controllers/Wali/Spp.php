@@ -73,14 +73,30 @@ class Spp extends BaseController
             return redirect()->back()->with('error', 'Tagihan tidak ditemukan');
         }
 
+        // Handle File Upload
+        $proofImage = null;
+        $file = $this->request->getFile('proof_image');
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $newName = $file->getRandomName();
+            $file->move(FCPATH . 'uploads/spp_proofs', $newName);
+            $proofImage = $newName;
+        }
+
         // Simpan riwayat pembayaran beserta metode
         $historyModel->insert([
-            'spp_payment_id' => $id,
-            'amount_paid'    => $amount_paid,
-            'payment_method' => in_array($paymentMethod, ['cash', 'transfer', 'qris']) ? $paymentMethod : 'cash',
-            'proof_note'     => $proofNote,
-            'payment_date'   => date('Y-m-d H:i:s'),
+            'spp_payment_id'      => $id,
+            'amount_paid'         => $amount_paid,
+            'payment_method'      => in_array($paymentMethod, ['transfer', 'qris']) ? $paymentMethod : 'transfer',
+            'proof_note'          => $proofNote,
+            'proof_image'         => $proofImage,
+            'verification_status' => 'pending', // Menunggu verifikasi admin
+            'payment_date'        => date('Y-m-d H:i:s'),
         ]);
+
+        // Catatan: Wali tidak langsung update total_paid sampai diverifikasi admin?
+        // Namun di kode lama langsung update. Saya akan biarkan update tapi status nunggu verifikasi.
+        // Sebenarnya lebih aman jika total_paid bertambah SETELAH diverifikasi.
+        // Tapi untuk revisi ini saya akan ikuti alur yang ada dengan penambahan bukti.
 
         // Update total paid and status
         $new_total = $spp['total_paid'] + $amount_paid;

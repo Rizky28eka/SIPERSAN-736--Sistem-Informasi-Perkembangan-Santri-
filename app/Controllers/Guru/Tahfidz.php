@@ -71,6 +71,7 @@ class Tahfidz extends BaseController
         $this->tahfidzItemModel->insert([
             'type'       => $this->request->getPost('type'),
             'name'       => $this->request->getPost('name'),
+            'content'    => $this->request->getPost('content'),
             'sort_order' => (int) ($this->request->getPost('sort_order') ?? 0),
         ]);
 
@@ -106,6 +107,7 @@ class Tahfidz extends BaseController
         $this->tahfidzItemModel->update($id, [
             'type'       => $this->request->getPost('type'),
             'name'       => $this->request->getPost('name'),
+            'content'    => $this->request->getPost('content'),
             'sort_order' => (int) ($this->request->getPost('sort_order') ?? 0),
         ]);
 
