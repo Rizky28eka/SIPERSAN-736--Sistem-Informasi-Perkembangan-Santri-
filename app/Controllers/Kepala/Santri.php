@@ -22,12 +22,24 @@ class Santri extends BaseController
 
     public function index()
     {
+        $keyword = $this->request->getGet('keyword');
+        $builder = $this->santriModel->select('santri.*, classes.name as class_name, users.name as wali_name')
+                                      ->join('classes', 'classes.id = santri.class_id', 'left')
+                                      ->join('users', 'users.id = santri.wali_id', 'left');
+
+        if ($keyword) {
+            $builder->groupStart()
+                    ->like('santri.name', $keyword)
+                    ->orLike('santri.nisn', $keyword)
+                    ->orLike('classes.name', $keyword)
+                    ->orLike('users.name', $keyword)
+                    ->groupEnd();
+        }
+
         $data = [
-            'title'  => 'Manajemen Data Santri',
-            'santris' => $this->santriModel->select('santri.*, classes.name as class_name, users.name as wali_name')
-                                          ->join('classes', 'classes.id = santri.class_id', 'left')
-                                          ->join('users', 'users.id = santri.wali_id', 'left')
-                                          ->findAll()
+            'title'   => 'Manajemen Data Santri',
+            'santris' => $builder->findAll(),
+            'keyword' => $keyword
         ];
         return view('kepala/santri/index', $data);
     }

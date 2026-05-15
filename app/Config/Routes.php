@@ -21,6 +21,7 @@ $routes->group('auth', function ($routes) {
 // ─── API ROUTES (AJAX / Notifikasi) ──────────────────────────────────────────
 $routes->group('api', function ($routes) {
     $routes->get('notifications/count',        'Api\Notifications::count');
+    $routes->get('notifications/list',         'Api\Notifications::list');
     $routes->post('notifications/mark-read',   'Api\Notifications::markAllRead');
     $routes->post('pusher/auth',               'Api\Notifications::pusherAuth');
 });
@@ -88,6 +89,7 @@ $routes->group('kepala', ['filter' => 'auth:kepala'], function ($routes) {
     // Laporan
     $routes->get('nilai',       'Kepala\Nilai::index');
     $routes->get('spp',         'Kepala\Spp::index');
+    $routes->post('spp/pay-cash', 'Kepala\Spp::payCash');
     $routes->get('master-spp',  'Kepala\MasterSpp::index');
     $routes->post('master-spp/update', 'Kepala\MasterSpp::update');
 });
@@ -95,6 +97,7 @@ $routes->group('kepala', ['filter' => 'auth:kepala'], function ($routes) {
 // ─── GURU ROUTES ──────────────────────────────────────────────────────────────
 $routes->group('guru', ['filter' => 'auth:guru'], function ($routes) {
     $routes->get('dashboard', 'Guru\Dashboard::index');
+    $routes->get('santri',    'Guru\Santri::index');
 
     // Absensi
     $routes->get('absensi',                 'Guru\Absensi::index');

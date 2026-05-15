@@ -95,6 +95,15 @@
 
                     <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sistem</div>
                     <?php
+                    $ayActive = url_is('kepala/academic-year') || url_is('kepala/academic-year/*');
+                    $ayCls    = $ayActive ? 'nav-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700';
+                    ?>
+                    <a href="<?= base_url('kepala/academic-year') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= $ayCls ?>">
+                        <i data-lucide="calendar" class="w-5 h-5"></i>
+                        <span>Tahun Ajaran</span>
+                    </a>
+
+                    <?php
                     $annActive = url_is('kepala/announcements') || url_is('kepala/announcements/*');
                     $annCls    = $annActive ? 'nav-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700';
                     ?>
@@ -106,6 +115,16 @@
 
                 <!-- ══ MENU GURU ════════════════════════════════════════════ -->
                 <?php if ($role === 'guru') : ?>
+                    <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Akademik</div>
+                    <?php
+                    $santriActive = url_is('guru/santri') || url_is('guru/santri/*');
+                    $santriCls    = $santriActive ? 'nav-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700';
+                    ?>
+                    <a href="<?= base_url('guru/santri') ?>" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all <?= $santriCls ?>">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        <span>Data Santri</span>
+                    </a>
+
                     <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Penilaian</div>
 
                     <?php
@@ -289,6 +308,47 @@
                 .catch(() => {});
         }
 
+        // Fetch daftar notifikasi terbaru
+        function fetchNotifList() {
+            const listContainer = document.getElementById('notif-list');
+            fetch('<?= base_url('api/notifications/list') ?>')
+                .then(r => r.json())
+                .then(data => {
+                    listContainer.innerHTML = '';
+                    if (data.notifications && data.notifications.length > 0) {
+                        data.notifications.forEach(n => {
+                            const item = document.createElement('div');
+                            item.className = 'p-3 hover:bg-slate-50 rounded-xl transition-all cursor-pointer border-b border-slate-50 last:border-0';
+                            item.innerHTML = `
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="megaphone" class="w-4 h-4"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-bold text-slate-700 truncate">${n.title}</p>
+                                        <p class="text-[10px] text-slate-500 line-clamp-2 mt-0.5">${n.content}</p>
+                                        <p class="text-[9px] text-slate-400 mt-1 font-medium">${n.created_at}</p>
+                                    </div>
+                                </div>
+                            `;
+                            listContainer.appendChild(item);
+                        });
+                        lucide.createIcons();
+                    } else {
+                        listContainer.innerHTML = `
+                            <div class="flex flex-col items-center justify-center py-6 text-slate-400">
+                                <i data-lucide="bell-off" class="w-8 h-8 mb-2 opacity-20"></i>
+                                <p class="text-xs font-medium tracking-wide">Tidak ada notifikasi baru</p>
+                            </div>
+                        `;
+                        lucide.createIcons();
+                    }
+                })
+                .catch(() => {
+                    listContainer.innerHTML = '<p class="text-xs text-red-500 text-center py-4">Gagal memuat notifikasi</p>';
+                });
+        }
+
         // Tandai semua sudah dibaca
         function markAllRead() {
             fetch('<?= base_url('api/notifications/mark-read') ?>', {
@@ -299,13 +359,29 @@
             .then(() => {
                 fetchNotifCount();
                 document.getElementById('notif-badge').classList.add('hidden');
+                // Update list UI langsung
+                const listContainer = document.getElementById('notif-list');
+                listContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-6 text-slate-400">
+                        <i data-lucide="bell-off" class="w-8 h-8 mb-2 opacity-20"></i>
+                        <p class="text-xs font-medium tracking-wide">Tidak ada notifikasi baru</p>
+                    </div>
+                `;
+                lucide.createIcons();
             });
         }
 
         // Toggle panel notifikasi
         function toggleNotifPanel() {
             const panel = document.getElementById('notif-panel');
+            const isHidden = panel.classList.contains('hidden');
+            
             panel.classList.toggle('hidden');
+            
+            // Fetch list hanya jika panel dibuka
+            if (isHidden) {
+                fetchNotifList();
+            }
         }
 
         // Tutup panel jika klik di luar

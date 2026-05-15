@@ -8,10 +8,19 @@
             <p class="text-slate-500">Daftar seluruh tagihan dan status pembayaran santri.</p>
         </div>
         <div class="flex items-center space-x-3">
-            <form action="" method="get" class="relative">
-                <input type="text" name="keyword" value="<?= $keyword ?? '' ?>" placeholder="Cari Santri/NISN..." 
-                    class="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none w-64 transition-all">
-                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <form action="<?= base_url('kepala/spp') ?>" method="get" class="flex items-center" id="searchForm">
+                <div class="relative">
+                    <input type="text" name="keyword" id="searchInput" value="<?= esc($keyword ?? '') ?>" placeholder="Cari nama/NISN/kelas..." 
+                        class="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none w-48 sm:w-64 transition-all">
+                    <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <?php if (!empty($keyword)): ?>
+                    <a href="<?= base_url('kepala/spp') ?>" class="ml-2 p-2 text-slate-400 hover:text-red-500 transition-all" title="Bersihkan Pencarian">
+                        <i data-lucide="x-circle" class="w-5 h-5"></i>
+                    </a>
+                <?php endif; ?>
             </form>
             <button onclick="window.print()" class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 font-medium hover:bg-slate-50 transition-all flex items-center space-x-2">
                 <i data-lucide="printer" class="w-4 h-4"></i>
@@ -29,7 +38,7 @@
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse" id="sppTable">
                 <thead>
                     <tr class="bg-slate-50 border-b border-slate-200">
                         <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Santri</th>
@@ -40,7 +49,7 @@
                         <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-slate-100" id="sppBody">
                     <?php if (empty($payments)) : ?>
                         <tr>
                             <td colspan="6" class="px-6 py-10 text-center text-slate-400 italic">Data tidak ditemukan.</td>
@@ -147,6 +156,41 @@
 
     document.getElementById('cashModal').addEventListener('click', function(e) {
         if (e.target === this) closeCashModal();
+    });
+
+    // Live Search Script
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const keyword = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#sppBody tr');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            if (row.id === 'emptySearchRow') return;
+            const text = row.innerText.toLowerCase();
+            if (text.includes(keyword)) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        let emptyRow = document.getElementById('emptySearchRow');
+        if (visibleCount === 0) {
+            if (!emptyRow) {
+                emptyRow = document.createElement('tr');
+                emptyRow.id = 'emptySearchRow';
+                emptyRow.innerHTML = `<td colspan="6" class="px-6 py-10 text-center text-slate-500 italic text-sm">Tidak ada data yang cocok dengan pencarian "${this.value}".</td>`;
+                document.getElementById('sppBody').appendChild(emptyRow);
+            }
+        } else if (emptyRow) {
+            emptyRow.remove();
+        }
+    });
+
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+        const emptyRow = document.getElementById('emptySearchRow');
+        if (emptyRow) emptyRow.remove();
     });
 </script>
 </div>

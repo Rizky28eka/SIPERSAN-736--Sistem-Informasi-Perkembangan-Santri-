@@ -25,9 +25,7 @@ class Notifications extends BaseController
 
         // Hitung pengumuman yang relevan dan belum dibaca
         $count = $db->table('announcements')
-            ->select('COUNT(*) as total')
-            ->where('target_role', 'all')
-            ->orWhere('target_role', $role)
+            ->select('id')
             ->groupStart()
                 ->where('target_role', 'all')
                 ->orWhere('target_role', $role)
@@ -40,6 +38,35 @@ class Notifications extends BaseController
             ->countAllResults();
 
         return $this->response->setJSON(['count' => $count]);
+    }
+
+    /**
+     * Ambil daftar pengumuman belum dibaca
+     */
+    public function list()
+    {
+        if (!session()->get('logged_in')) {
+            return $this->response->setStatusCode(401)->setJSON(['error' => 'Unauthorized']);
+        }
+
+        $userId = session()->get('user_id');
+        $role   = session()->get('role');
+        $db     = \Config\Database::connect();
+
+        $unread = $db->table('announcements')
+            ->select('id, title, content, created_at')
+            ->groupStart()
+                ->where('target_role', 'all')
+                ->orWhere('target_role', $role)
+            ->groupEnd()
+            ->whereNotIn('id', function($sq) use ($userId) {
+                $sq->select('announcement_id')->from('announcement_reads')->where('user_id', $userId);
+            })
+            ->orderBy('created_at', 'DESC')
+            ->limit(5)
+            ->get()->getResultArray();
+
+        return $this->response->setJSON(['notifications' => $unread]);
     }
 
     /**

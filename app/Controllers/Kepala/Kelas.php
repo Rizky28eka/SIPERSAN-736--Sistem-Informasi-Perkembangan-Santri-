@@ -20,11 +20,21 @@ class Kelas extends BaseController
 
     public function index()
     {
+        $keyword = $this->request->getGet('keyword');
+        $builder = $this->classModel->select('classes.*, users.name as teacher_name')
+                                      ->join('users', 'users.id = classes.teacher_id', 'left');
+
+        if ($keyword) {
+            $builder->groupStart()
+                    ->like('classes.name', $keyword)
+                    ->orLike('users.name', $keyword)
+                    ->groupEnd();
+        }
+
         $data = [
             'title'   => 'Manajemen Data Kelas',
-            'classes' => $this->classModel->select('classes.*, users.name as teacher_name')
-                                          ->join('users', 'users.id = classes.teacher_id', 'left')
-                                          ->findAll()
+            'classes' => $builder->findAll(),
+            'keyword' => $keyword
         ];
         return view('kepala/kelas/index', $data);
     }

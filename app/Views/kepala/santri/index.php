@@ -7,17 +7,32 @@
         <p class="text-sm text-slate-400 mt-1">Total <?= count($santris) ?> santri terdaftar</p>
     </div>
     <div class="flex items-center gap-3">
+        <!-- Search Form -->
+        <form action="<?= base_url('kepala/santri') ?>" method="get" class="flex items-center" id="searchForm">
+            <div class="relative">
+                <input type="text" name="keyword" id="searchInput" value="<?= esc($keyword ?? '') ?>" placeholder="Cari nama/NISN/kelas..." 
+                    class="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none w-48 sm:w-64 transition-all">
+                <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                </div>
+            </div>
+            <?php if (!empty($keyword)): ?>
+                <a href="<?= base_url('kepala/santri') ?>" class="ml-2 p-2 text-slate-400 hover:text-red-500 transition-all" title="Bersihkan Pencarian">
+                    <i data-lucide="x-circle" class="w-5 h-5"></i>
+                </a>
+            <?php endif; ?>
+        </form>
         <!-- Tombol Export CSV -->
         <a href="<?= base_url('kepala/santri/export') ?>"
            class="flex items-center gap-2 border border-green-300 bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-xl text-sm font-medium transition-all">
             <i data-lucide="download" class="w-4 h-4"></i>
-            Export CSV
+            <span class="hidden md:inline">Export</span>
         </a>
         <!-- Tombol Tambah -->
         <a href="<?= base_url('kepala/santri/create') ?>"
            class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-all text-sm font-medium">
             <i data-lucide="plus" class="w-4 h-4"></i>
-            Tambah Santri
+            <span class="hidden md:inline">Tambah Santri</span>
         </a>
     </div>
 </div>
@@ -31,7 +46,7 @@
 
 <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
     <div class="overflow-x-auto">
-        <table class="w-full text-left">
+        <table class="w-full text-left" id="santriTable">
             <thead>
                 <tr class="bg-slate-50 text-slate-400 text-xs uppercase tracking-wider">
                     <th class="px-6 py-4 font-semibold text-center w-16">No</th>
@@ -42,7 +57,7 @@
                     <th class="px-6 py-4 font-semibold text-right">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-50">
+            <tbody class="divide-y divide-slate-50" id="santriBody">
                 <?php if (empty($santris)) : ?>
                     <tr>
                         <td colspan="6" class="px-6 py-10 text-center text-slate-500 italic text-sm">Belum ada data santri.</td>
@@ -101,4 +116,48 @@
         </table>
     </div>
 </div>
+<script>
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const keyword = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#santriBody tr');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            // Kita ambil text dari seluruh kolom di baris tersebut
+            const text = row.innerText.toLowerCase();
+            if (text.includes(keyword)) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Update teks jumlah santri
+        const countText = document.querySelector('p.text-sm.text-slate-400');
+        if (countText) {
+            countText.innerText = 'Menampilkan ' + visibleCount + ' santri';
+        }
+        
+        // Tampilkan pesan jika tidak ada hasil
+        let emptyRow = document.getElementById('emptySearchRow');
+        if (visibleCount === 0) {
+            if (!emptyRow) {
+                emptyRow = document.createElement('tr');
+                emptyRow.id = 'emptySearchRow';
+                emptyRow.innerHTML = `<td colspan="6" class="px-6 py-10 text-center text-slate-500 italic text-sm">Tidak ada santri yang cocok dengan pencarian "${this.value}".</td>`;
+                document.getElementById('santriBody').appendChild(emptyRow);
+            }
+        } else if (emptyRow) {
+            emptyRow.remove();
+        }
+    });
+
+    // Opsional: Tetap izinkan Enter untuk search server-side (sebagai backup)
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+        // Hapus baris kosong buatan JS sebelum submit
+        const emptyRow = document.getElementById('emptySearchRow');
+        if (emptyRow) emptyRow.remove();
+    });
+</script>
 <?= $this->endSection() ?>

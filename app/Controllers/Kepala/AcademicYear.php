@@ -43,7 +43,7 @@ class AcademicYear extends BaseController
         $this->academicYearModel->save([
             'year'     => $this->request->getPost('year'),
             'semester' => $this->request->getPost('semester'),
-            'status'   => 'non-aktif'
+            'status'   => 'inactive'
         ]);
 
         return redirect()->to('/kepala/academic-year')->with('success', 'Tahun ajaran berhasil ditambahkan.');
@@ -52,10 +52,10 @@ class AcademicYear extends BaseController
     public function activate($id)
     {
         // Deactivate all first
-        $this->academicYearModel->where('status', 'aktif')->set(['status' => 'non-aktif'])->update();
+        $this->academicYearModel->where('status', 'active')->set(['status' => 'inactive'])->update();
         
         // Activate selected
-        $this->academicYearModel->update($id, ['status' => 'aktif']);
+        $this->academicYearModel->update($id, ['status' => 'active']);
 
         return redirect()->to('/kepala/academic-year')->with('success', 'Tahun ajaran berhasil diaktifkan.');
     }

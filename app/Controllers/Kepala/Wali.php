@@ -18,9 +18,20 @@ class Wali extends BaseController
 
     public function index()
     {
+        $keyword = $this->request->getGet('keyword');
+        $builder = $this->userModel->where('role', 'wali');
+
+        if ($keyword) {
+            $builder->groupStart()
+                    ->like('name', $keyword)
+                    ->orLike('username', $keyword)
+                    ->groupEnd();
+        }
+
         $data = [
-            'title' => 'Manajemen Data Wali Santri',
-            'walis' => $this->userModel->where('role', 'wali')->findAll()
+            'title'   => 'Manajemen Data Wali Santri',
+            'walis'   => $builder->findAll(),
+            'keyword' => $keyword
         ];
         return view('kepala/wali/index', $data);
     }

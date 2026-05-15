@@ -18,9 +18,20 @@ class Guru extends BaseController
 
     public function index()
     {
+        $keyword = $this->request->getGet('keyword');
+        $builder = $this->userModel->where('role', 'guru');
+
+        if ($keyword) {
+            $builder->groupStart()
+                    ->like('name', $keyword)
+                    ->orLike('username', $keyword)
+                    ->groupEnd();
+        }
+
         $data = [
-            'title' => 'Manajemen Data Guru',
-            'gurus' => $this->userModel->where('role', 'guru')->findAll()
+            'title'   => 'Manajemen Data Guru',
+            'gurus'   => $builder->findAll(),
+            'keyword' => $keyword
         ];
         return view('kepala/guru/index', $data);
     }

@@ -42,7 +42,7 @@
                             </td>
                             <td class="px-6 py-4 text-sm text-slate-600 uppercase font-bold"><?= $y['semester'] ?></td>
                             <td class="px-6 py-4">
-                                <?php if ($y['status'] == 'aktif') : ?>
+                                <?php if ($y['status'] == 'active') : ?>
                                     <span class="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Aktif</span>
                                 <?php else : ?>
                                     <span class="bg-slate-100 text-slate-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Non-Aktif</span>
@@ -50,7 +50,7 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end space-x-2">
-                                    <?php if ($y['status'] == 'non-aktif') : ?>
+                                    <?php if ($y['status'] == 'inactive') : ?>
                                         <a href="<?= base_url('kepala/academic-year/activate/' . $y['id']) ?>" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-1" onclick="return confirm('Aktifkan tahun ajaran ini?')">
                                             <i data-lucide="power" class="w-3 h-3"></i>
                                             <span>Aktifkan</span>
